@@ -1,0 +1,125 @@
+Sub lastcell()
+    Dim rng As Range
+    Set rng = Cells(Rows.Count, 1).End(xlUp)
+    MsgBox "a列最后的一个非空单元格是" & rng.Address(0, 0)
+    Set rng = nothinng
+End Sub
+
+Sub specialaddress()
+    Dim rng As Range
+    Set rng = Sheet1.UsedRange.SpecialCells(xlCellTypeFormulas)
+    rng.Select
+    MsgBox " 表中有公式的单元格"
+    Set rng = Nothing
+End Sub
+
+Sub findcell()
+    Dim strfind As String
+    Dim rng As Range
+    strfind = InputBox("请输入要查找的值")
+    lf Len(Trim(strfind)) > 0
+        With Sheet1.Range("a:a")
+            Set rng = .Find(what:=strfind, _
+            after:=.Cells(.Cells.Count), _
+            LookIn:=xlValues, _
+            lookat:=xlWhole, _
+            searchorder:=xlByRows, _
+            searchdirection:=xlNext, _
+            MatchCase:=False)
+End Sub
+
+Sub rnglike()
+    Dim rng As Range
+    Dim r As Integer
+    r = 1
+    Sheet1.Range("a:a").ClearContents
+    For Each rng In sheet2.Range("a1:a10")
+        If rng.Text Like "*a*" Then
+            Cells(r, 1) = rng.Text
+            r = r + 1
+        End If
+    Next
+    Set rng = Nothing
+End Sub
+
+Sub copyvalues()
+    Sheet1.Range("a1:g7").Copy
+    sheet2.Range("a1").PasteSpecial Paste:=xlPasteValues
+    Application.CutCopyMode = False
+End Sub
+
+Sub insertrow()
+    Dim i As Integer
+    For i = 1 To 3
+        Sheet1.Rows(3).Insert
+End Sub
+
+Sub deleterow()
+    Dim r As Integer
+    Dim i As Integer
+    With Sheet1
+        r = .Cells(.Rows.Count, 1).End(xlUp).Row
+        For i = r To i Step -1
+            If worksheetfunciton.CountIf(.Columns(1), .Cells(i, 1)) > 1 Then
+                .Rows(i).Delete
+            End If
+        Next
+    End With
+End Sub
+
+Sub specialdelete()
+  Dim r As Long
+  With Sheet1
+    r = .Cells(.Rows.Count, 1).End(xlUp).Row
+    .Range("a2:a" & r).Replace "vt248pa", "", 2
+    .Columns(1).specialcell(4).EntireRow.Delete
+End Sub
+
+Sub copyfilter()
+    sheet2.Cells.Clear
+    With Sheet1
+    If .FilterMode Then
+        .AutoFilter.Range.SpecialCells(12).Copy sheet2.Cells(1, 1)
+    End If
+    End With
+End Sub
+
+Option Base 1
+Sub myarr()
+Dim arr As Variant
+Dim i As Integer
+arr = Array("王晓明", "吴胜玉", "周志国")
+For i = LBound(arr) To UBound(arr)
+    Cells(i, 1) = arr(i)
+Next
+
+End Sub
+
+Sub sumcell()
+    Dim r As Integer
+    Dim rng As Range
+    Dim dsum As Double
+    r = Cells(Rows.Count, 1).End(xlUp).Row
+    Set rng = Range("a1:f" & r)
+    dsum = Application.WorksheetFunction.Sum(rng)
+End Sub
+
+Sub findmaxandmin()
+    Dim r As Integer
+    Dim rng As Range, myrange As Range
+    Dim maxcount As Integer, maincount As Integer
+    Dim mymax As Double, mymin As Double
+    r = Cells(Rows.Count, 1).End(xlUp).Row
+    Set myrng = Range("a1:j" & r)
+    For Each rng In myrng
+        If rng.Value = WorksheetFunction.Max(myrng) Then
+            rng.Interior.ColorIndex = 3
+            maxcount = maxcount + 1
+            mymax = rng.Value
+        ElseIf rng.Value = WorksheetFunction.Min(myrng) Then
+                rng.Interior.ColorIndex = 5
+                maincount = maincount + 1
+                mymin = rng.Value
+        Else
+            rng.Interior.ColorIndex = 0
+End Sub

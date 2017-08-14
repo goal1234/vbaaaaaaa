@@ -1,0 +1,1146 @@
+
+'这个是RANGE属性+select的方法  
+Sub RngSelect() 
+
+      Sheet1.Range("A3:F6, B1:C5").Select
+End Sub
+
+'这个用了Cells属性+value方法,Cells(RowIndex, ColumnIndex)
+Sub Cell()
+
+    Dim icell As Integer
+
+    For icell = 1 To 100
+
+        Sheet2.Cells(icell, 1).Value = icell
+
+    Next
+
+End Sub
+
+'用快捷的记号进行赋值
+'命名为Fast的单元格赋值为4
+Sub Fastmark()
+    [A1:A5] = 2
+    [Fast] = 4
+End Sub
+
+'使用offset属性进行，这里是一个区域的偏移
+Sub Offset()
+
+    Sheet3.Range("A1:C3").Offset(3, 3).Select
+
+End Sub
+
+
+
+'resize将会扩大某个区域
+'expression.Resize(RowSize, ColumnSize)
+Sub Resize()
+    Sheet4.Range("A1").Resize(3, 3).Select
+End Sub
+
+'搞定一个不联系的单元格，Ctrl-->Union
+Sub UnSelect()
+    Union(Sheet5.Range("A1:D4"), Sheet5.Range("E5:H8")).Select
+End Sub
+
+'usedrange已经使用最大的单元格
+Sub UseSelect()
+   Sheet6.UsedRange.Select
+End Su
+
+'返回了当前工作区域
+Sub CurrentSelect()
+    Sheet7.Range("A5").CurrentRegion.Select
+End Sub
+
+
+
+'激活后选择单元格
+Sub RngSelect()
+
+    Sheet3.Activate
+    Sheet3.Range("A1：B10").Select
+
+End Sub
+
+'直接激活这个单元格
+Sub RngActivate()
+
+   Sheet3.Activate
+
+    Sheet3.Range("A1:B10").Activate
+
+End Sub
+
+'使用Goto方法，这种事直接的跳转
+Sub RngGoto()
+
+    Application.Goto Reference:=Sheet3.Range("A1：B10"), scroll:=True
+
+End Sub
+
+'最后一个非空单元格是经常用到的
+'xlDown xlUp xlToRight xlToLeft这四个参数是重要的
+Sub LastRow()
+
+    Dim rng As Range
+
+    Set rng = Sheet1.Range("A65536").End(xlUp)
+
+    MsgBox "A列中最后一个非空单元格是" & rng.Address(0, 0) _
+
+        & ",行号" & rng.Row & ",数值" & rng.Value
+
+    Set rng = Nothing
+
+End Sub
+
+Sub LastColumn()
+   Dim rng As Range
+    Set rng = Sheet1.Range("IV1").End(xlToLeft)
+    MsgBox "第一行中最后一个非空单元格是" & rng.Address(0, 0) _
+        & ",列号" & rng.Column & ",数值" & rng.Value
+    Set rng = Nothing
+End Sub
+
+'定位一个特点的单元格，比如可见，有空值在SpecialCells(xlCellType...)进行
+Sub SpecialAddress()
+
+    Dim rng As Range
+
+    Set rng = Sheet1.UsedRange.SpecialCells(xlCellTypeFormulas)
+
+    rng.Select
+
+    MsgBox "工作表中有公式的单元格为： " & rng.Address
+
+    Set rng = Nothing
+
+End Sub
+
+
+'使用查找的方法进行
+Sub RngFind()
+    Dim StrFind As String
+    Dim Rng As Range
+    StrFind = InputBox("请输入要查找的值:")
+    If Trim(StrFind) <> "" Then
+        With Sheet1.Range("A:A")
+            Set Rng = .Find(What:=StrFind, _
+                            After:=.Cells(.Cells.Count), _
+                            LookIn:=xlValues, _
+                            LookAt:=xlWhole, _
+                            SearchOrder:=xlByRows, _
+                            SearchDirection:=xlNext, _
+                            MatchCase:=False)
+            If Not Rng Is Nothing Then
+                Application.Goto Rng, True
+            Else
+                MsgBox "没有找到该单元格!"
+            End If
+        End With
+    End If
+End Sub
+
+    #001  Sub RngFindNext()
+    #002      Dim StrFind As String
+    #003      Dim Rng As Range
+    #004      Dim FindAddress As String
+    #005      StrFind = InputBox("请输入要查找的值:")
+    #006      If Trim(StrFind) <> "" Then
+    #007          With Sheet1.Range("A:A")
+    #008              Set Rng = .Find(What:=StrFind, _
+    #009                              After:=.Cells(.Cells.Count), _
+    #010                              LookIn:=xlValues, _
+    #011                              LookAt:=xlWhole, _
+    #012                              SearchOrder:=xlByRows, _
+    #013                              SearchDirection:=xlNext, _
+    #014                              MatchCase:=False)
+    #015              If Not Rng Is Nothing Then
+    #016                  FindAddress = Rng.Address
+    #017                  Do
+    #018                      Rng.Interior.ColorIndex = 6
+    #019                      Set Rng = .FindNext(Rng)
+    #020                  Loop While Not Rng Is Nothing And Rng.Address <> FindAddress
+    #021              End If
+    #022          End With
+    #023      End If
+    #024  End Sub
+
+'使用like进行运算
+    #001  Sub RngLike()
+    #002      Dim rng As Range
+    #003      Dim a As Integer
+    #004      a = 1
+    #005      With Sheet2
+    #006          .Range("A:A").ClearContents
+    #007          For Each rng In .Range("B1:E1000")
+    #008              If rng.Text Like "*a*" Then
+    #009                  .Range("A" & a) = rng.Text
+    #010                  a = a + 1
+    #011              End If
+    #012          Next
+    #013      End With
+    #014  End Sub
+
+'替换操作replace  通州-->南通
+Sub RngReplace()
+    Range("A1:A5").Replace "通州", "南通"
+End Sub
+
+'复制单元格区域 用copy这个方法
+ Sub RangeCopy()
+   Application.DisplayAlerts = False
+    Sheet1.Range("A1").CurrentRegion.Copy Sheet2.Range("A1")
+    Application.DisplayAlerts = True
+End Sub
+
+'复制的时候，粘贴下部分，保留数值，边框等格式
+Sub CopyWithSameColumnWidths()
+    Sheet1.Range("A1").CurrentRegion.Copy
+    With Sheet3.Range("A1")
+        .PasteSpecial xlPasteColumnWidths
+        .PasteSpecial xlPasteAll
+    End With
+   Application.CutCopyMode = False
+End Sub
+
+'选择性的粘贴一部分
+'仅复制数值到另一区域
+Sub CopyPasteSpecial()
+    Sheet1.Range("A1").CurrentRegion.Copy
+    Sheet2.Range("A1").PasteSpecial Paste:=xlPasteValues
+    Application.CutCopyMode = False
+End Sub
+
+'直接赋值的方法
+Sub GetValueResize()
+    With Sheet1.Range("A1").CurrentRegion
+       Sheet3.Range("A1").Resize(.Rows.Count, .Columns.Count).Value = .Value
+    End With
+End Sub
+
+
+'单元格自动进入编辑状态
+'SelectionChange事件过程
+'第二三行设置触发条件之后进行运行
+    #001  Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    #002      If Target.Column = 3 And Target.Count = 1 Then
+    #003          If Target <> "" Then
+    #004              Application.SendKeys "{F2}"
+    #005          End If
+    #006      End If
+    #007  End Sub
+'恢复之前的操作
+    #001  Private Sub Worksheet_Deactivate()
+    #002      Application.CellDragAndDrop = True
+    #003  End Sub
+
+'单元格的字体等
+'利用属性等进行
+    #001  Public Sub RngFont()
+    #002      With Range("A1").Font
+    #003          .Name = "华文彩云"
+    #004          .FontStyle = "Bold"
+    #005          .Size = 18
+    #006          .ColorIndex = 3
+    #007          .Underline = 2
+    #008      End With
+    #009  End Sub
+
+'单元格格式操作
+'为了确定其中的格式
+    #001  Sub RngInterior()
+    #002      With Range("A1").Interior
+    #003          .ColorIndex = 3
+    #004          .Pattern = xlPatternCrissCross
+    #005          .PatternColorIndex = 6
+    #006      End With
+    #007  End Sub
+
+'为单元格区域添加边框
+    #001  Sub AddBorders()
+    #002       Dim rng As Range
+    #003       Set rng = Range("B4:G10")
+    #004       With rng.Borders
+    #005           .LineStyle = xlContinuous
+    #006           .Weight = xlThin
+    #007           .ColorIndex = 5
+    #008       End With
+    #009       rng.BorderAround xlContinuous, xlMedium, 5
+    #010       Set rng = Nothing
+    #011  End Sub
+
+'多种边框
+    #001  Sub BordersDemo()
+    #002       Dim rng As Range
+    #003       Set rng = Sheet2.Range("B4:G10")
+    #004       With rng.Borders(xlInsideHorizontal)
+    #005           .LineStyle = xlDot
+    #006           .Weight = xlThin
+    #007           .ColorIndex = 5
+    #008       End With
+    #009       With rng.Borders(xlInsideVertical)
+    #010           .LineStyle = xlContinuous
+    #011           .Weight = xlThin
+    #012           .ColorIndex = 5
+    #013       End With
+    #014       rng.BorderAround xlContinuous, xlMedium, 5
+    #015       Set rng = Nothing
+    #016  End Sub
+
+'灵活设置单元格的行高列宽
+    #001  Sub RngToPoints()
+    #002      With Range("A1")
+    #003          .RowHeight = Application.CentimetersToPoints(2)
+    #004          .ColumnWidth = Application.CentimetersToPoints(1.5)
+    #005      End With
+
+    #006      With Range("A2")
+    #007          .RowHeight = Application.InchesToPoints(1.2)
+    #008          .ColumnWidth = Application.InchesToPoints(0.3)
+    #009      End With
+    #010  End Sub
+
+'在单元格中建立数据有效性
+    #001  Sub Validation()
+    #002      With Range("A1:A10").Validation
+    #003         .Delete
+    #004          .Add Type:=xlValidateList, _
+    #005              AlertStyle:=xlValidAlertStop, _
+    #006              Operator:=xlBetween, _
+    #007              Formula1:="1,2,3,4,5,6,7,8"
+    #008      End With
+    #009  End Sub
+
+'判断单元格是否存在数据有效性
+    #001  Sub Validation()
+    #002      On Error GoTo Line
+    #003      If Range("A2").Validation.Type >= 0 Then
+    #004          MsgBox "单元格有数据有效性!"
+    #005          Exit Sub
+    #006      End If
+    #007  Line:
+    #008      MsgBox "单元格没有数据有效性!"
+    #009  End Sub
+
+'动态的数据有效性通过事件进行
+    #001  Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    #002      If Target.Column = 1 And Target.Count = 1 And Target.Row > 1 Then
+    #003          With Target.Validation
+    #004              .Delete
+    #005              .Add Type:=xlValidateList, _
+    #006                  AlertStyle:=xlValidAlertStop, _
+    #007                  Operator:=xlBetween, _
+    #008                  Formula1:="主机,显示器"
+    #009          End With
+    #010      End If
+    #011  End Sub
+    #012  Private Sub Worksheet_Change(ByVal Target As Range)
+    #013      If Target.Column = 1 And Target.Row > 1 And Target.Count = 1 Then
+    #014          With Target.Offset(0, 1).Validation
+    #015              .Delete
+    #016              Select Case Target
+    #017                  Case "主机"
+    #018                      .Add Type:=xlValidateList, _
+    #019                          AlertStyle:=xlValidAlertStop, _
+    #020                          Operator:=xlBetween, _
+    #021                          Formula1:="Z286,Z386,Z486,Z586"
+    #022                  Case "显示器"
+    #023                      .Add Type:=xlValidateList, _
+    #024                          AlertStyle:=xlValidAlertStop, _
+    #025                          Operator:=xlBetween, _
+    #026                          Formula1:="三星17,飞利浦15,三星15,飞利浦17"
+    #027              End Select
+    #028          End With
+    #029      End If
+    #030  End Sub
+
+'自动展开数据有效性下拉列表
+    #001  Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    #002      If Target.Column = 5 Then Application.SendKeys "%{down}"
+    #003  End Sub
+
+'单元格中的公式-->单元格对象中的Formula方法
+    #001  Sub rngFormula()
+    #002      Sheet1.Range("C1:C10").Formula = "=SUM(A1+B1)"
+    #003  End Sub
+'利用R1C1样式进行偏移
+    #001  Sub rngFormulaRC()
+    #002      Sheet2.Range("C1:C10").FormulaR1C1 = "=SUM(RC[-2]+RC[-1])"
+    #003  End Sub
+
+'利用数组的属性进行
+    #001  Sub RngFormulaArray()
+    #002      Sheet3.Range("C1").FormulaArray = "=A1:A2*B1:B2"
+    #003  End Sub
+
+' 检查单元格是否含有公式，这是重要的一点
+    #001  Private Sub CommandButton1_Click()
+    #002      Select Case Selection.HasFormula
+    #003          Case True
+    #004              MsgBox "公式单元格!"
+    #005          Case False
+    #006              MsgBox "非公式单元格!"
+    #007          Case Else
+    #008          MsgBox "公式区域：" & Selection.SpecialCells(xlCellTypeFormulas, 23).Address(0, 0)
+    #009      End Select
+    #010  End Sub
+
+'判断单元格是否存在#NULL!、#DIV/0!、#VALUE!、#REF!、#NAME?、#NUM!、#N/A值
+    #001  Sub FormulaIsError()
+    #002      If VBA.IsError(Range("A1").Value) = True Then
+    #003          MsgBox "A1单元格错误类型为:" & Range("A1").Text
+    #004      Else
+    #005          MsgBox "A1单元格公式结果为" & Range("A1").Value
+    #006      End If
+    #007  End Sub
+
+'取得单元格中公式的引用单元格
+    #001  Sub RngPrecedent()
+    #002      Dim rng As Range
+    #003      Set rng = Sheet1.Range("C1").Precedents              'Precedents属性返回一个Range对象，该对象代表单元格的所有引用单元格
+    #004      MsgBox "公式所引用的单元格有：" & rng.Address
+    #005      Set rng = Nothing
+    #006  End Sub
+
+'将单元格中的公式转换为数值
+    #001  Sub SpecialPaste()
+    #002      With Range("A1:A10")
+    #003          .Copy
+    #004          .PasteSpecial Paste:=xlPasteValues
+    #005      End With
+    #006      Application.CutCopyMode = False
+    #007  End Sub
+'这个赋值方法
+    #001  Sub UseValue()
+    #002      Range("A1:A10").Value = Range("A1:A10").Value
+    #003  End Sub
+'把值赋值给公式的方法
+    #001  Sub UseFormula()
+    #002      Range("A1").Formula = Range("A1").Value
+    #003  End Sub
+
+
+'单元格批注的判断 is Nothing 这样直接表达
+    #001  Sub HasComment()
+    #002      If Range("A1").Comment Is Nothing Then
+    #003          MsgBox "A1单元格中没有批注!"
+    #004      Else
+    #005          MsgBox "A1单元格中批注内容为：" & Chr(13) & Range("A1").Comment.Text
+    #006      End If
+    #007  End Sub
+
+'为单元格添加批注通过方法.addcomment text
+    #001  Sub Comment_Add()
+    #002      With Range("A1")
+    #003          If .Comment Is Nothing Then
+    #004              .AddComment Text:=.Value
+    #005              .Comment.Visible = True
+    #006          End If
+    #007      End With
+    #008  End Sub
+
+'清除单元格中的批注
+    #001  Sub Commentdel()
+    #002      On Error Resume Next
+    #003      Range("A1").ClearComments
+    #004      Range("A2").ClearNotes
+    #005      Range("A3").Comment.Delete
+    #006  End Sub
+
+'合并单元格操作  判断单元格区域是否存在合并的单元格
+#001  Sub IsMergeCell()
+#002      If Range("A1").MergeCells = True Then
+#003          MsgBox "包含合并单元格"
+#004      Else
+#005          MsgBox "没有包含合并单元格"
+#006      End If
+#007  End Sub
+
+'无需遍历就判断，ISNULL
+    #001  Sub IsMerge()
+    #002      If IsNull(Range("E8:I17").MergeCells) Then
+    #003          MsgBox "包含合并单元格"
+    #004      Else
+    #005          MsgBox "没有包含合并单元格"
+    #006      End If
+    #007  End Sub
+
+'合并单元格一般保留第一个，需要联结两个字段
+    #001  Sub Mergerng()
+    #002      Dim StrMerge As String
+    #003      Dim rng As Range
+    #004      If TypeName(Selection) = "Range" Then
+    #005          For Each rng In Selection
+    #006              StrMerge = StrMerge & rng.Value
+    #007          Next
+    #008          Application.DisplayAlerts = False
+    #009          Selection.Merge
+    #010          Selection.Value = StrMerge
+    #011          Application.DisplayAlerts = True
+    #012      End If
+    #013  End Sub
+'合并内容相同的连续单元格,竖着合并相同的单元格忙，这是在单元格较长的时候进行的
+    #001  Sub Mergerng()
+    #002      Dim IntRow As Integer
+    #003      Dim i As Integer
+    #004      Application.DisplayAlerts = False
+    #005      With Sheet1
+    #006          IntRow = .Range("A65536").End(xlUp).Row
+    #007          For i = IntRow To 2 Step -1
+    #008              If .Cells(i, 2).Value = .Cells(i - 1, 2).Value Then
+    #009                  .Range(.Cells(i - 1, 2), .Cells(i, 2)).Merge
+    #010              End If
+    #011          Next
+    #012      End With
+    #013      Application.DisplayAlerts = True
+    #014  End Sub
+
+'   高亮显示单元格区域
+    #001  Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    #002      Cells.Interior.ColorIndex = xlColorIndexNone
+    #003      Target.Interior.ColorIndex = 8
+    #004  End Sub
+
+    #001  Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    #002      Dim rng As Range
+    #003      Cells.Interior.ColorIndex = xlNone
+    #004      Set rng = Application.Union(Target.EntireColumn, Target.EntireRow)
+    #005      rng.Interior.ColorIndex = 24
+    #006  End Sub
+
+'不显示消息提示栏
+    #001  Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
+    #002      If Target.Locked = True Then
+    #003          MsgBox "此单元格已保护，不能编辑!"
+    #004          Cancel = True
+    #005      End If
+    #006  End Sub
+
+'对指定的区域重新计算来提高效率
+    #001  Sub CalculationSpecialRange()
+    #002      Dim OldCalculation As XlCalculation
+    #003      OldCalculation = Application.Calculation
+    #004      Application.Calculation = xlCalculationManual
+    #005      ActiveSheet.Range("A1:D10").Calculate
+    #006      Application.Calculation = OldCalculation
+    #007  End Sub
+
+'单元格录入数据后自动保护-->其实是设定密码
+    #001  Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    #002      On Error Resume Next
+    #003      Sheet1.Unprotect Password:="12345"
+    #004      If Target.Value <> "" Then
+    #005          Target.Locked = True
+    #006          Sheet1.Protect Password:="12345"
+    #007      End If
+    #008  End Sub
+
+'当选择工作表A1单元格时显示一个消息框。
+    #001  Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    #002      If Target.Address(0, 0) = "A1" Then
+    #003          MsgBox "你选择了A1单元格"
+    #004      End If
+    #005  End Sub
+'使用Column属性和Row属性
+    #001  Private Sub Worksheet_Change(ByVal Target As Range)
+    #002      If Target.Column = 1 And Target.Row < 11 Then
+    #003          Target.Offset(, 1) = Val(Target) * 3
+    #004      End If
+    #005  End Sub
+'取交集的方法进行多个区域范围选取
+    #001  Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    #002      If Not Application.Intersect(Target, Union(Range("A1:A10"), Range("C1:C10"))) Is Nothing Then
+    #003          MsgBox "你选择了" & Target.Address(0, 0) & "单元格"
+    #004      End If
+    #005  End Sub
+'使用工作表的名称激活工作表
+    #001  Sub ShActivate()
+    #002      Worksheets("索引号").Activate
+    #003      'Sheets("索引号").Activate
+    #004  End Sub
+
+'使用工作表的索引号用地址进行，可以进行遍历的操作
+    #001  Sub ShIndex()
+    #002      Worksheets(1).Select
+    #003  End Sub
+
+'使用工作表的代码名称，这个是一个方法CodeName
+    #001  Sub ShCodeName()
+    #002      MsgBox Sheets(1).CodeName
+    #003  End Sub
+'使用ActiveSheet进行
+    #001  Sub ShActive()
+    #002      MsgBox ActiveSheet.Name
+    #003  End Sub
+
+'单个工作表是激活
+    #001  Sub SelectSh()
+    #002      Worksheets("Sheet2").Select
+    #003  End Sub
+    #004  Sub ActivateSh()
+    #005      Worksheets("Sheet2").Activate
+    #006  End Sub
+'多个工作表应该是select
+    #001  Sub SelectShs()
+    #002      Dim Shs As Worksheet
+    #003      For Each Shs In Worksheets
+    #004          Shs.Select False
+    #005      Next
+    #006  End Sub
+    #007  Sub SelectSheets()
+    #008      Worksheets.Select
+    #009  End Sub
+    #010  Sub ArraySheets()
+    #011      Worksheets(Array(1, 2, 3)).Select
+    #012  End Sub
+
+'遍历工作表 for each加下标进行遍历然后用NEXT进行结束
+    #001  Sub ShCount1()
+    #002      Dim c As Integer
+    #003      Dim i As Integer
+    #004      Dim s As String
+    #005      c = Worksheets.Count
+    #006      For i = 1 To c
+    #007          s = s & Worksheets(i).Name & Chr(13)
+    #008      Next
+    #009      MsgBox "工作簿中含有以下工作表:" & Chr(13) & s
+    #010  End Sub
+
+'在工作表中上下翻页,这是个好玩的东东,利用了ActiveSheet.Index进行偏移
+    #001  Sub DownSheet()
+    #002      Dim i As Integer
+    #003      i = Worksheets.Count
+    #004      If ActiveSheet.Index < i Then
+    #005          Worksheets(ActiveSheet.Index + 1).Activate
+    #006      Else
+    #007          Worksheets(1).Activate
+    #008      End If
+    #009  End Sub
+    #010  Sub UpSheet()
+    #011      Dim i As Integer
+    #012      i = Worksheets.Count
+    #013      If ActiveSheet.Index > 1 Then
+    #014          Worksheets(ActiveSheet.Index - 1).Activate
+    #015      Else
+    #016          Worksheets(i).Activate
+    #017      End If
+    #018  End Sub
+
+'工作表的添加与删除
+    #001  Sub Addsh()
+    #002      Dim Sh As Worksheet
+    #003      With Worksheets
+    #004          Set Sh = .Add(after:=Worksheets(.Count))
+    #005          Sh.Name = "数据"
+    #006      End With
+    #007  End Sub
+
+    #001  Sub Addsh_2()
+    #002      Dim i As Integer
+    #003      Dim sh As Worksheet
+    #004      For i = 1 To 10
+    #005          Set sh = Sheets.Add(after:=Sheets(Sheets.Count))
+    #006          sh.Name = i
+    #007      Next
+    #008  End Sub
+'删除之后重新进行增加
+    #001  Sub Delsh()
+    #002      Dim sh As Worksheet
+    #003      For Each sh In ThisWorkbook.Sheets
+    #004          If sh.Name <> "工作表的添加与删除" Then
+    #005              Application.DisplayAlerts = False
+    #006              sh.Delete
+    #007              Application.DisplayAlerts = True
+    #008          End If
+    #009      Next
+    #010  End Sub
+'对于单张工作表可以使用下面的代码
+    #001  Sub Addsh_3()
+    #002      Dim Sh As Worksheet
+    #003      For Each Sh In Worksheets
+    #004          If Sh.Name = "数据" Then
+    #005              MsgBox "工作簿中已有""数据""工作表,不能重复添加!"
+    #006              Exit Sub
+    #007          End If
+    #008      Next
+    #009      With Worksheets
+    #010          Set Sh = .Add(after:=Worksheets(.Count))
+    #011          Sh.Name = "数据"
+    #012      End With
+    #013  End Sub
+'
+    #001  Sub Addsh_4()
+    #002      Dim sh As Worksheet
+    #003      On Error GoTo line
+    #004      With Worksheets
+    #005          Set sh = .Add(after:=Worksheets(.Count))
+    #006          sh.Name = "数据"
+    #007      End With
+    #008      Exit Sub
+    #009  line:
+    #010      MsgBox "工作簿中已有""数据""工作表,不能重复添加!"
+    #011      Application.DisplayAlerts = False
+    #012      Worksheets(Worksheets.Count).Delete
+    #013      Application.DisplayAlerts = True
+    #014  End Sub
+
+    #001  Sub Addsh_5()
+    #002      Dim i As Integer, arr
+    #003      Dim sh As Worksheet
+    #004      On Error Resume Next
+    #005      arr = Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    #006      For i = 0 To UBound(arr)
+    #007          With Worksheets
+    #008              Set sh = .Add(after:=Sheets(.Count))
+    #009              sh.Name = arr(i)
+    #010          End With
+    #011      Next
+    #012      Application.DisplayAlerts = False
+    #013      For Each sh In Worksheets
+    #014          If sh.Name Like "Sheet*" Then sh.Delete
+    #015      Next
+    #016      Application.DisplayAlerts = True
+    #017  End Sub
+
+'禁止删除指定工作表
+    #001  Public Ctl As CommandBarControl
+    #002  Sub DelSht()
+    #003      Set Ctl = Application.CommandBars.FindControl(ID:=847)
+    #004      Ctl.OnAction = "MyDelSht"
+    #005  End Sub
+    #006  Sub ResSht()
+    #007      Set Ctl = Application.CommandBars.FindControl(ID:=847)
+    #008      Ctl.OnAction = ""
+    #009  End Sub
+    #010  Sub MyDelSht()
+    #011      If VBA.UCase$(ActiveSheet.CodeName) = "SHEET2" Then
+    #012          MsgBox "禁止删除" & ActiveSheet.Name & "工作表!"
+    #013      Else
+    #014          ActiveSheet.Delete
+    #015      End If
+    #016  End Sub
+'键菜单中的“删除工作表”菜单的OnAction属性设置为“MyDelSht”
+'为了不影响其他工作簿的使用，在VBE中双击ThisWorkbook写入下面的代码。
+    #001  Private Sub Workbook_Activate()
+    #002      Call DelSht
+    #003  End Sub
+    #004  Private Sub Workbook_Deactivate()
+    #005      Call ResSht
+    #006  End Sub
+
+'自动建立工作表目录
+    #001  Private Sub Worksheet_Activate()
+    #002      Dim sh As Worksheet
+    #003      Dim a As Integer
+    #004      Dim R As Integer
+    #005      R = Sheet1.[A65536].End(xlUp).Row
+    #006      a = 2
+    #007      If Sheet1.Cells(2, 1) <> "" Then
+    #008          Sheet1.Range("A2:A" & R).ClearContents
+    #009      End If
+    #010      For Each sh In Worksheets
+    #011          If sh.CodeName <> "Sheet1" Then
+    #012              Sheet1.Cells(a, 1).Value = sh.Name
+    #013              a = a + 1
+    #014          End If
+    #015      Next
+    #016  End Sub
+
+    #001  Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    #002      Dim R As Integer
+    #003      R = Sheet1.[A65500].End(xlUp).Row
+    #004      On Error Resume Next
+    #005      If Target.Count = 1 Then
+    #006          If Target.Column = 1 Then
+    #007              If Target.Row > 1 And Target.Row <= R Then
+    #008                  Sheets(Target.Value).Select
+    #009              End If
+    #010          End If
+    #011      End If
+    #012  End Sub
+
+工作表的深度隐藏
+在使用VBA开发的工作簿文件完成交与用户使用后，我们往往希望用户在打开工作簿时启用宏，此时除了使用“禁用宏则关闭工作簿”的功能外，还可以隐藏所有有数据的工作表，如果用户在打开工作簿时禁用宏则只显示一张空白的工作表，达到强制启用宏的效果，代码如下：
+    #001  Dim sh As Worksheet
+    #002  Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    #003      Sheet1.Visible = True
+    #004      For Each sh In ThisWorkbook.Sheets
+    #005          If sh.Name <> "空白" Then
+    #006              sh.Visible = xlSheetVeryHidden
+    #007          End If
+    #008      Next
+    #009      ActiveWorkbook.Save
+    #010  End Sub
+    #011  Private Sub Workbook_Open()
+    #012      For Each sh In ThisWorkbook.Sheets
+    #013          If sh.Name <> "空白" Then
+    #014              sh.Visible = xlSheetVisible
+    #015          End If
+    #016      Next
+    #017      Sheet1.Visible = xlSheetVeryHidden
+    #018  End Sub
+
+' 防止更改工作表的名称
+    #001  Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    #002      If Sheet1.Name <> "Excel Home" Then Sheet1.Name = "Excel Home"
+    #003      ThisWorkbook.Save
+    #004  End Sub
+
+'工作表中一次插入多行--一个循环还有一个方法sheet1.row(3).insert
+    #001  Sub InSertRows_1()
+    #002      Dim i As Integer
+    #003      For i = 1 To 3
+    #004          Sheet1.Rows(3).Insert
+    #005      Next
+    #006  End Sub
+'用EntireRow.Resize()进行
+    #001  Sub InSertRows_2()
+    #002      Sheet2.Range("A3").EntireRow.Resize(3).Insert
+    #003  End Sub
+
+    #001  Sub InSertRows_3()
+    #002      Sheet3.Rows(3).Resize(3).Insert
+    #003  End Sub
+
+'删除工作表中的空行
+’用定位的方法可以删除
+    #001  Sub DelBlankRow()
+    #002      Dim rRow As Long
+    #003      Dim LRow As Long
+    #004      Dim i As Long
+    #005      rRow = Sheet1.UsedRange.Row
+    #006      LRow = rRow + Sheet1.UsedRange.Rows.Count - 1       '最后一行的行数
+    #007      For i = LRow To rRow Step -1
+    #008          If Application.WorksheetFunction.CountA(Rows(i)) = 0 Then
+    #009              Rows(i).Delete
+    #010          End If
+    #011      Next
+    #012  End Sub
+
+'删除工作表的重复行
+    #001  Sub DeleteRow()
+    #002      Dim R As Integer
+    #003      Dim i As Integer
+    #004      With Sheet1
+    #005          R = .[a65536].End(xlUp).Row
+    #006          For i = R To 1 Step -1
+    #007              If WorksheetFunction.CountIf(.Columns(1), .Cells(i, 1)) > 1 Then
+    #008                  .Rows(i).Delete
+    #009              End If
+    #010          Next
+    #011      End With
+    #012  End Sub
+
+'删除特定内容的单元格，并不是筛选出来删掉
+’特定内容替换为一个空单元格格，然后删除空单元格
+    #001  Sub SpecialDelete()
+    #002      Dim R As Integer
+    #003      With Sheet1
+    #004          R = .Range("a65536").End(xlUp).Row
+    #005          .Range("a2:a" & R).Replace "Excel", "", 2
+    #006          .Columns(1).SpecialCells(4).EntireRow.Delete
+    #007      End With
+    #008  End Sub
+
+'判断是否选中整行
+    #001  Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+    #002      If Target.Rows.Count = 1 Then
+    #003          If Target.Columns.Count = 256 Then
+    #004              MsgBox "您选中了整行,当前行号" & Target.Row
+    #005          End If
+    #006      End If
+    #007  End Sub
+
+'限制工作表的滚动区域---SCROLLAREA方法
+    #001  Private Sub Workbook_Open()
+    #002      Sheet1.ScrollArea = "B4:H12"
+    #003  End Sub
+
+'复制自动筛选后的数据区域-------------->SpecialCells(12).Copy可见单元格进行复制
+    #001  Sub CopyFilter()
+    #002      Sheet2.Cells.Clear
+    #003      With Sheet1
+    #004          If .FilterMode Then
+    #005              .AutoFilter.Range.SpecialCells(12).Copy Sheet2.Cells(1, 1)
+    #006          End If
+    #007      End With
+    #008  End Sub
+
+' 使用高级筛选获得不重复记录
+'用的是action参数
+    #001  Sub Filter()
+    #002      Sheet1.Range("A1").CurrentRegion.AdvancedFilter _
+    #003          Action:=xlFilterCopy, Unique:=True, _
+    #004          CopyToRange:=Sheet2.Range("A1")
+    #005  End Sub
+
+'工作表的保护与解除保护
+    #001  Sub ShProtect()
+    #002      With Sheet1
+    #003          .Unprotect Password:="12345"
+    #004          .Cells(1, 1) = 100
+    #005          .Protect Password:="12345"
+    #006      End With
+    #007  End Sub
+'长时间没有使用就需要解除工作的密码
+    #001  Sub RemoveShProtect()
+    #002      Dim i1 As Integer, i2 As Integer, i3 As Integer
+    #003      Dim i4 As Integer, i5 As Integer, i6 As Integer
+    #004      Dim i7 As Integer, i8 As Integer, i9 As Integer
+    #005      Dim i10 As Integer, i11 As Integer, i12 As Integer
+    #006      On Error Resume Next
+    #007      If ActiveSheet.ProtectContents = False Then
+    #008          MsgBox "该工作表没有保护密码！"
+    #009          Exit Sub
+    #010      End If
+    #011      For i1 = 65 To 66: For i2 = 65 To 66: For i3 = 65 To 66
+    #012      For i4 = 65 To 66: For i5 = 65 To 66: For i6 = 65 To 66
+    #013      For i7 = 65 To 66: For i8 = 65 To 66: For i9 = 65 To 66
+    #014      For i10 = 65 To 66: For i11 = 65 To 66: For i12 = 32 To 126
+    #015          ActiveSheet.Unprotect Chr(i1) & Chr(i2) & Chr(i3) & Chr(i4) & Chr(i5) _
+    #016          & Chr(i6) & Chr(i7) & Chr(i8) & Chr(i9) & Chr(i10) & Chr(i11) & Chr(i12)
+    #017          If ActiveSheet.ProtectContents = False Then
+    #018              MsgBox "已经解除了工作表保护！"
+    #019              Exit Sub
+    #020          End If
+    #021      Next: Next: Next: Next: Next: Next
+    #022      Next: Next: Next: Next: Next: Next
+    #023  End Sub
+
+'奇偶页打印
+    #001  Sub PrintOddPage()
+    #002      Dim TotalPg As Integer
+    #003      TotalPg = ExecuteExcel4Macro("GET.DOCUMENT(50)")
+    #004      For i = 1 To TotalPg Step 2
+    #005          ActiveSheet.PrintOut From:=i, To:=i
+    #006      Next
+    #007  End Sub
+
+'工作簿的引用方法
+    #001  Sub WbQuote_1()
+    #002      MsgBox "路径为：" & Workbooks("技巧40 工作簿的引用方法.xls").Path
+    #003  End Sub
+'使用工作簿的索引号
+    #001  Sub WbQuote_2()
+    #002      MsgBox "第一个打开的工作簿名字为：" & Workbooks(1).Name
+    #003  End Sub
+'路径的所有名字和路径
+    #001  Sub WbQuote_3()
+    #002      MsgBox "包括完整路径的工作簿名称为：" & Workbooks(1).FullName
+    #003  End Sub
+'使用ThisWorkbook
+    #001  Sub WbQuote_4()
+    #002      ThisWorkbook.Save
+    #003  End Sub
+
+'使用ADD方法加入新的工作簿的方法
+    #001  Sub AddNowbook()
+    #002      Dim Nowbook As Workbook
+    #003      Dim ShName As Variant
+    #004      Dim Arr As Variant
+    #005      Dim i As Integer
+    #006      Dim myNewWorkbook As Integer
+    #007      myNewWorkbook = Application.SheetsInNewWorkbook
+    #008      ShName = Array("余额", "单价", "数量", "金额")
+    #009      Arr = Array("01月", "02月", "03月", "04月", "05月", "06月", "07月", "08月", "09月", "10月", "11月", "12月")
+    #010      Application.SheetsInNewWorkbook = 4
+    #011      Set Nowbook = Workbooks.Add
+    #012      With Nowbook
+    #013          For i = 1 To 4
+    #014              With .Sheets(i)
+    #015                  .Name = ShName(i - 1)
+    #016                  .Range("B1").Resize(1, UBound(Arr) + 1) = Arr
+    #017                  .Range("A2") = "品名"
+    #018              End With
+    #019          Next
+    #020          .SaveAs Filename:=ThisWorkbook.Path & "" & "存货明细.xls"
+    #021          .Close Savechanges:=True
+    #022      End With
+    #023      Set Nowbook = Nothing
+    #024      Application.SheetsInNewWorkbook = myNewWorkbook
+    #025  End Sub
+
+'打开指定的工作簿
+#001  Sub Openfile()
+#002      Dim x As Integer
+#003      For x = 1 To Workbooks.Count
+#004          If Workbooks(x).Name = "123.xls" Then
+#005              MsgBox """123""工作簿已经打开!"
+#006              Exit Sub
+#007          End If
+#008      Next
+#009      Workbooks.Open ThisWorkbook.Path & "\123.xls"
+#010  End Sub
+
+'判断指定工作簿是否打开
+'采用遍历的方法
+#001  Sub WorkbookIsOpen_1()
+#002      Dim Wb As Workbook
+#003      Dim myWb As String
+#004      myWb = "Excel Home.xls"
+#005      For Each Wb In Workbooks
+#006          If Wb.Name = myWb Then
+#007              MsgBox "工作簿" & myWb & "已经被打开!"
+#008              Exit Sub
+#009          End If
+#010      Next
+#011      MsgBox "工作簿" & myWb & "没有被打开!"
+#012  End Sub
+
+'错误处理方法
+#001  Sub WorkbookIsOpen_2()
+#002      Dim Wb As Workbook
+#003      Dim myWb As String
+#004      myWb = "Excel Home.xls"
+#005      Err.Clear
+#006      On Error GoTo line
+#007      Set Wb = Application.Workbooks(myWb)
+#008      MsgBox "工作簿" & myWb & "已经被打开!"
+#009      Set Wb = Nothing
+#010      Exit Sub
+#011  line:
+#012      MsgBox "工作簿" & myWb & "没有被打开!"
+#013      Set Wb = Nothing
+#014  End Sub
+
+'关闭工作簿不显示保存对话框
+    #001  Sub wbClose_1()
+    #002      ThisWorkbook.Close SaveChanges:=False
+    #003  End Sub
+'关闭时设置保存
+    #001  Sub wbClose_2()
+    #002      ThisWorkbook.Saved = True
+    #003      ThisWorkbook.Close
+    #004  End Sub
+
+    #001  Sub wbClose_3()
+    #002      ThisWorkbook.Save
+    #003      ThisWorkbook.Close
+    #004  End Sub
+‘’单击工作簿关闭按钮关闭工作簿
+    #001  Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    #002       Me.Saved = True
+    #003  End Sub
+
+    #001  Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    #002      Me.Save
+    #003  End Sub
+
+
+
+'禁用工作簿的关闭按钮
+
+    #001  Dim BClose As Boolean
+    #002  Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    #003      If BClose = False Then
+    #004          Cancel = True
+    #005          MsgBox "此功能已经被禁止，请使用""关闭""按钮关闭工作簿!", vbExclamation, "提示"
+    #006      End If
+    #007  End Sub
+    #008  Public Sub CloseWorkbook()
+    #009      BClose = True
+    #010      Me.Close
+    #011  End Sub
+
+
+
+‘保存指定工作表为工作簿文件
+ 如果需要将工作簿中的工作表单独保存为一个工作簿文件，可以使用Worksheet对象的Copy方法，将指定的工作表复制到一个新建的工作簿
+    #001  Sub SheetCopy()
+    #002      On Error GoTo line
+    #003      ActiveSheet.Copy
+    #004      ActiveWorkbook.Close SaveChanges:=True, Filename:=ThisWorkbook.Path & "\SheetCopy.xls"
+    #005      Exit Sub
+    #006  line:
+    #007      ActiveWorkbook.Close False
+    #008  End Sub
+
+
+    #001  Sub ArrSheetCopy()
+    #002      On Error GoTo line
+    #003      Worksheets(Array("Sheet1", "Sheet2")).Copy
+    #004      ActiveWorkbook.SaveAs Filename:=ThisWorkbook.Path & "\ArrSheetCopy.xls"
+    #005      ActiveWorkbook.Close SaveChanges:=True
+    #006      Exit Sub
+    #007  line:
+    #008      ActiveWorkbook.Close False
+    #009  End Sub
+
+'打印预览时不触发事件
+    #001  Private Sub Workbook_Open()
+    #002      Dim CmdCtrls As CommandBarControls
+    #003      Dim Cmd As CommandBarControl
+    #004      Set CmdCtrls = Application.CommandBars.FindControls(ID:=109)
+    #005      For Each Cmd In CmdCtrls
+    #006          Cmd.OnAction = "ThisWorkbook.MyPrint"
+    #007      Next
+    #008  End Sub
+
+    #001  Public Sub MyPrint()
+    #002      With Application
+    #003          .EnableEvents = False
+    #004          .ActiveSheet.PrintPreview EnableChanges:=False
+    #005          .EnableEvents = True
+    #006      End With
+    #007  End Sub
+
+为了在工作簿时恢复默认的打印预览设置，在ThisWorkbook代码窗口写入以下代码：
+    #001  Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    #002      Dim CmdCtrls As CommandBarControls
+    #003      Dim Cmd As CommandBarControl
+    #004      Set CmdCtrls = Application.CommandBars.FindControls(ID:=109)
+    #005      For Each Cmd In CmdCtrls
+    #006          Cmd.OnAction = ""
+    #007      Next
+    #008  End Sub
+
+'设置工作簿文档属性信息
+    #001  Sub WbBuiltin()
+    #002      With ThisWorkbook
+    #003          .BuiltinDocumentProperties("Title") = "Wordbook（工作簿）对象"
+    #004          .BuiltinDocumentProperties("Subject") = "设置工作簿的文档属性信息"
+    #005          .BuiltinDocumentProperties("Author") = "yuanzhuping"
+    #006          .BuiltinDocumentProperties("Company") = "tzzls"
+    #007          .BuiltinDocumentProperties("Comments") = "工作簿文档属性信息"
+    #008          .BuiltinDocumentProperties("Keywords") = "Excel VBA"
+    #009      End With
+    #010      MsgBox "工作簿文档属性信息设置完毕！"
+    #011  End Sub
+
+'使用公式
+'如果需要引用的数据不是太多，可以使用公式取得引用工作簿中的工作表数据，如下面的代码所示
+    #001  Sub CopyData_1()
+    #002      Dim Temp As String
+    #003      Temp = "'" & ThisWorkbook.Path & "\[数据表.xls]Sheet1'!"
+    #004      With Sheet1.Range("A1:F22")
+    #005          .FormulaR1C1 = "=" & Temp & "RC"
+    #006          .Value = .Value
+    #007      End With
+    #008  End Sub
+
+'使用GetObject函数
+'使用GetObject函数来获取对指定的Excel工作表的引用，如下面的代码所示
+    #001  Sub CopyData_2()
+    #002      Dim Wb As Workbook
+    #003      Dim Temp As String
+    #004      Application.ScreenUpdating = False
+    #005      Temp = ThisWorkbook.Path & "\数据表.xls"
+    #006      Set Wb = GetObject(Temp)
+    #007          With Wb.Sheets(1).Range("A1").CurrentRegion
+    #008              Range("A1").Resize(.Rows.Count, .Columns.Count) = .Value
+    #009              Wb.Close False
+    #010          End With
+    #011      Set Wb = Nothing
+    #012      Application.ScreenUpdating = True
+    #013  End Sub
+
+
+
+
+
+
+
